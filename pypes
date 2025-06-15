@@ -40,7 +40,7 @@ def initColors():
     colorRange = curses.COLORS
 
     for i in range(curses.COLORS):
-        curses.init_pair(i, i, curses.COLOR_BLACK)
+        curses.init_pair(i, i, -1)
 
 def nextColor():
     global colorRange, colorIndex
