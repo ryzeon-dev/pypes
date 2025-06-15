@@ -1,0 +1,153 @@
+#!/usr/bin/python3
+
+from curses import wrapper
+import curses
+from random import choice
+import time
+
+
+N = S = '┃'
+E = W = '━'
+
+NE = '┏'
+NW = '┓'
+SE = '┗'
+SW = '┛'
+
+up = (-1, 0)
+down = (1, 0)
+left = (0, -1)
+right = (0, 1)
+
+colorIndex = 0
+colorRange = None
+last = None
+
+def makeMove():
+    pool = [up, down, left, right]
+    
+    if last is not None:
+        pool.append(last)
+        pool.append(last)
+        pool.append(last)
+        pool.append(last)
+
+    return choice(pool)
+
+def initColors():
+    global colorRange
+    
+    curses.start_color()
+    curses.use_default_colors()
+
+    colorRange = curses.COLORS
+
+    for i in range(curses.COLORS):
+        curses.init_pair(i, i, curses.COLOR_BLACK)
+
+def nextColor():
+    global colorRange, colorIndex
+
+    while True:
+        index = choice(range(colorRange))
+
+        if index != colorIndex:
+            colorIndex = index 
+            break
+
+def main(screen):
+    global last
+    MAX_Y, MAX_X = screen.getmaxyx()
+    
+    y, x = MAX_Y // 2, MAX_X // 2
+    curses.curs_set(0)
+
+    initColors()
+    nextColor()
+
+    while True:
+        MAX_Y, MAX_X = screen.getmaxyx()
+        move = makeMove()
+
+        if (move == left and last == right) or (move == right and last == left) or (move == up and last == down) or (move == down and last == up):
+            continue
+        
+        try:
+            if move == up:
+                if last == left:
+                    screen.addstr(y, x, SE, curses.color_pair(colorIndex))
+                
+                elif last == right:
+                    screen.addstr(y, x, SW, curses.color_pair(colorIndex))
+
+                else:
+                    screen.addstr(y, x, N, curses.color_pair(colorIndex))
+            
+            elif move == down:
+                if last == left:
+                    screen.addstr(y, x, NE, curses.color_pair(colorIndex))
+
+                elif last == right:
+                    screen.addstr(y, x, NW, curses.color_pair(colorIndex))
+                
+                else:
+                    screen.addstr(y, x, S, curses.color_pair(colorIndex))
+
+            elif move == left:
+                if last == up:
+                    screen.addstr(y, x, NW, curses.color_pair(colorIndex))
+                
+                elif last == down:
+                    screen.addstr(y, x, SW, curses.color_pair(colorIndex))
+                
+                else:
+                    screen.addstr(y, x, W, curses.color_pair(colorIndex))
+                
+            elif move == right:
+                if last == up:
+                    screen.addstr(y, x, NE, curses.color_pair(colorIndex))
+
+                elif last == down:
+                    screen.addstr(y, x, SE, curses.color_pair(colorIndex))
+
+                else:
+                    screen.addstr(y, x, E, curses.color_pair(colorIndex))
+        
+        except curses.ERR:
+            continue 
+
+        screen.refresh()
+
+        last = move
+
+        y += move[0]
+        x += move[1]
+
+        jump = False
+
+        if y < 0:
+            jump = True
+            y = MAX_Y - 1
+
+        elif y >= MAX_Y:
+            jump = True
+            y = 0
+
+        if x < 0:
+            jump = True
+            x = MAX_X - 1
+
+        elif x >= MAX_X:
+            jump = True
+            x = 0
+
+        if jump:
+            nextColor()
+
+        time.sleep(0.02)
+
+if __name__ == '__main__':
+    try:
+        wrapper(main)
+    except KeyboardInterrupt:
+        pass
