@@ -27,10 +27,7 @@ def makeMove():
     pool = [up, down, left, right]
     
     if last is not None:
-        pool.append(last)
-        pool.append(last)
-        pool.append(last)
-        pool.append(last)
+        pool.extend([last]*8)
 
     return choice(pool)
 
