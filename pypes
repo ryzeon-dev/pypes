@@ -113,7 +113,7 @@ def main(screen):
                 else:
                     screen.addstr(y, x, E, curses.color_pair(colorIndex))
         
-        except curses.ERR:
+        except curses.error:
             continue 
 
         screen.refresh()
