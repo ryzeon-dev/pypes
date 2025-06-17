@@ -52,8 +52,11 @@ def nextColor():
             colorIndex = index 
             break
 
+def areOpposite(m1, m2):
+    return m1[0] == -m2[0] and m1[1] == -m2[1]
+
 def main(screen):
-    global last
+    global last, colorIndex
     MAX_Y, MAX_X = screen.getmaxyx()
     
     y, x = MAX_Y // 2, MAX_X // 2
@@ -66,7 +69,7 @@ def main(screen):
         MAX_Y, MAX_X = screen.getmaxyx()
         move = makeMove()
 
-        if (move == left and last == right) or (move == right and last == left) or (move == up and last == down) or (move == down and last == up):
+        if last is not None and areOpposite(move, last):
             continue
         
         try:
